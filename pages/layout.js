@@ -1,15 +1,14 @@
 import React from "react";
+import Navbar from "./components/Navbar"; // Import the Navbar component
+import PostComponent from "./components/postComponent";
 
 const Layout = ({ children }) => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="bg-black py-4">
-        <div className="container mx-auto px-4 text-center">Threads</div>
-      </header>
+    <div className="min-h-screen min-w-screen back overflow-auto flex flex-col items-center justify-center bg-gradient-to-r from-purple-800 to-blue-800 relative">
+      <Navbar /> {/* Use the Navbar component here */}
       <main className="flex-grow">
         <div className="container mx-auto px-4 py-12 text-center">
-          <p class>Hi</p>
-          {children}
+          <PostComponent></PostComponent>
         </div>
       </main>
     </div>
