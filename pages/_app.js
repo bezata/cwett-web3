@@ -32,7 +32,8 @@ export default function App({ Component, pageProps }) {
       <RainbowKitProvider
         chains={chains}
         theme={darkTheme({
-          connectButtonBackground: "#2B3BAE",
+          connectButtonBackground: "#9333EA",
+          accentColor: "#9333EA",
         })}
       >
         <Layout />
