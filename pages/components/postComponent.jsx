@@ -1,5 +1,7 @@
 import React from "react";
 import { useState } from "react";
+import person from "../images/person.svg";
+import Image from "next/image";
 
 const PostComponent = () => {
   const [isLiked, setIsLiked] = useState(false);
@@ -7,29 +9,27 @@ const PostComponent = () => {
     setIsLiked((current) => !current);
   };
   return (
-    <div className="flex bg-transparent shadow-xl shadow-purple-600/80 rounded-lg mx-4 md:mx-auto my-6 max-w-md md:max-w-2xl ">
+    <div className="flex max-w-md mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto md:max-w-2xl ">
       <div className="flex items-start px-4 py-6">
-        <img
-          className="w-12 h-12 rounded-full object-cover mr-4 shadow"
-          src="https://images.unsplash.com/photo-1542156822-6924d1a71ace?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=500&q=60"
+        <Image
+          className="object-cover w-12 h-12 mr-4 rounded-full shadow"
+          src={person}
           alt="avatar"
         />
         <div className="">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-white -mt-1">
-              Brad Adams{" "}
-            </h2>
+            <h2 className="-mt-1 text-lg font-semibold text-white">A </h2>
             <small className="text-sm text-white">22h ago</small>
           </div>
 
-          <p className="mt-3 text-white text-sm">
+          <p className="mt-3 text-sm text-white">
             Lorem ipsum, dolor sit amet conse. Saepe optio minus rem dolor sit
-            amet!
+            amet!ssssssssssssssssssssssssssssssssssss
           </p>
-          <div className="mt-4 flex items-center">
+          <div className="flex items-center mt-4">
             <button
               onClick={handleLiked}
-              className="flex mr-2 text-white text-sm "
+              className="flex mr-2 text-sm text-white "
             >
               <svg
                 fill={isLiked ? "#EEFFFF" : "none"}
@@ -46,7 +46,7 @@ const PostComponent = () => {
               </svg>
               <span>12</span>
             </button>
-            <button className="flex mr-2 text-white-700 text-sm ">
+            <button className="flex mr-2 text-sm text-white-700 ">
               <svg
                 fill="none"
                 viewBox="0 0 24 24"

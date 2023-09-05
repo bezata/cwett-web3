@@ -1,4 +1,6 @@
 import React from "react";
+import Image from "next/image";
+import person from "../images/person.svg";
 
 const SendTweet = () => {
   return (
@@ -6,15 +8,11 @@ const SendTweet = () => {
       <section class="p-3 border-b border-gray-600"></section>
       <section class="w-full flex px-3 py-2">
         <div class="mr-1">
-          <img
-            class="rounded-full"
-            src="https://pbs.twimg.com/profile_images/1366772608373387269/K6En5xnu_normal.jpg"
-            alt="Profile Picture"
-          />
+          <Image src={person} alt="avatar" width={50} height={50} />
         </div>
         <div class="flex-1">
           <textarea
-            class="w-full p-2 bg-transparent outline-none placeholder-gray-400 text-white resize-none"
+            class="w-full p-2 bg-transparent outline-none  placeholder-white text-white resize-none"
             rows="4"
             placeholder="What's happening?"
           ></textarea>
@@ -28,9 +26,9 @@ const SendTweet = () => {
                 stroke="currentColor"
               >
                 <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
                   d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
