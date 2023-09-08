@@ -3,9 +3,14 @@ import person from "../images/person.svg";
 import Image from "next/image";
 import CommentsModals from "./commentModal";
 import abi from "../contracts/CweetABI.json";
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWalletClient,
+} from "wagmi";
+import UserProfileModal from "./profileModal";
 
-const contract = "0x8286fdBEbCB0df8e5aaB88f9dAde8448058e49a3";
+const contract = "0x7D288657D5A11e0c3557Fd18250d36EC3b42b460";
 const CweetABI = abi;
 const PostComponent = ({
   user,
@@ -17,7 +22,9 @@ const PostComponent = ({
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
+  const [openProfileModal, setOpenProfileModal] = useState(false);
 
+  const { data: walletClient } = useWalletClient();
   const { config: likes } = usePrepareContractWrite({
     address: contract,
     abi: CweetABI,
@@ -34,16 +41,18 @@ const PostComponent = ({
   const { write: unlike } = useContractWrite(unlikes);
 
   const handleLiked = async () => {
-    try {
-      if (!isLiked) {
-        setIsLiked(true);
-        await like?.();
-      } else {
-        setIsLiked(false);
-        await unlike?.();
+    if (walletClient != undefined) {
+      try {
+        if (!isLiked) {
+          setIsLiked(true);
+          await like?.();
+        } else {
+          setIsLiked(false);
+          await unlike?.();
+        }
+      } catch (error) {
+        console.error("Error when liking/unliking:", error);
       }
-    } catch (error) {
-      console.error("Error when liking/unliking:", error);
     }
   };
 
@@ -53,11 +62,13 @@ const PostComponent = ({
         {timeStamp}
       </small>
       <div className="flex items-start px-4 py-6">
-        <Image
-          className="object-cover w-12 h-12 mr-4 rounded-full shadow"
-          src={person}
-          alt="avatar"
-        />
+        <button onClick={() => setOpenProfileModal(true)}>
+          <Image
+            className="object-cover w-12 h-12 mr-4 rounded-full shadow"
+            src={person}
+            alt="avatar"
+          />
+        </button>
         <div className="">
           <div className="flex items-start flex-col">
             <h2 className="text-lg font-semibold text-white mt-3">{user}</h2>
@@ -107,7 +118,17 @@ const PostComponent = ({
         </div>
       </div>{" "}
       {openCommentsModal && (
-        <CommentsModals setOpenCommentsModal={setOpenCommentsModal} />
+        <CommentsModals
+          setOpenCommentsModal={setOpenCommentsModal}
+          ID={cweetID}
+          account={user}
+        />
+      )}
+      {openProfileModal && (
+        <UserProfileModal
+          setOpenProfileModal={setOpenProfileModal}
+          account={user}
+        ></UserProfileModal>
       )}
     </div>
   );

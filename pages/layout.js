@@ -6,7 +6,7 @@ import abi from "./contracts/CweetABI.json";
 import { useContractRead } from "wagmi";
 import { usePrepareContractWrite } from "wagmi";
 
-const contract = "0x8286fdBEbCB0df8e5aaB88f9dAde8448058e49a3";
+const contract = "0x7D288657D5A11e0c3557Fd18250d36EC3b42b460";
 const CweetABI = abi;
 
 const Layout = () => {
@@ -38,10 +38,10 @@ const Layout = () => {
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-auto min-w-screen bg-gradient-to-r from-purple-800/80 to-blue-800/60 ">
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow w-1/2">
         <div className="container mx-auto text-center ">
           <SendTweet />
-          {cweets.map((latestCweet, index) => (
+          {cweets?.map((latestCweet, index) => (
             <PostComponent
               key={index}
               cweetID={index}

@@ -1,12 +1,28 @@
 import Image from "next/image";
 import person from "../images/person.svg";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PostComponent from "./postComponent";
+import { useWalletClient, useContractRead } from "wagmi";
+import abi from "../contracts/CweetABI.json";
 
-const UserProfileModal = ({ setOpenProfileModal }) => {
+const contract = "0x7D288657D5A11e0c3557Fd18250d36EC3b42b460";
+const CweetABI = abi;
+const UserProfileModal = ({ setOpenProfileModal, account }) => {
   const handleCloseProfileModal = () => {
     setOpenProfileModal(false);
   };
+  const [userCwettsAR, setUserCwettsAR] = useState([]);
+
+  const { data: userCwetts } = useContractRead({
+    address: contract,
+    abi: CweetABI,
+    functionName: "getCwettsDetailsByUser",
+    args: [account],
+    watch: true,
+  });
+  useEffect(() => {
+    setUserCwettsAR(userCwetts);
+  }, [userCwetts]);
 
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto bg-gradient-to-r from-purple-800 to-blue-800">
@@ -21,22 +37,26 @@ const UserProfileModal = ({ setOpenProfileModal }) => {
               width={50}
               height={50}
             />
-            <h1 className="text-lg font-semibold text-center mb-1 text-white">
-              Cwetts
-            </h1>{" "}
-            <button className="text-white bg-transparent shadow shadow-purple-600 focus:ring-4 focus:outline-none border hover:border-purple-500 border-purple-600 font-medium rounded-lg text-sm px-5 py-2.5">
-              Follow
-            </button>
             <div className="shadow shadow-purple-600 rounded-b-xl mt-3 flex flex-col items-center border border-purple-600 justify-center">
               <h2 className="text-xs font-semibold mt-5 text-white">
-                User Address: 0x1234567890
+                {account}
               </h2>
-              <h3 className="text-xs font-semibold text-white">Followers: 0</h3>
+
               <h4 className="text-xs font-semibold mb-5 text-white">
-                Posts: 3
+                Posts: {userCwetts?.length}
               </h4>
             </div>
-            <PostComponent></PostComponent>
+            {userCwettsAR?.map((latestCweet, index) => (
+              <PostComponent
+                key={index}
+                cweetID={index}
+                user={latestCweet.userAddress || ""}
+                cweet={latestCweet.cwettText || ""}
+                timeStamp={latestCweet.timestamp?.toString() || ""}
+                likeCount={latestCweet.likes?.toString() || "0"}
+                commentCount={latestCweet.commentsCount?.toString() || "0"}
+              />
+            ))}
             <div className="flex gap-2 relative"></div>
             <div className="flex flex-row mt-10 justify-between">
               <button

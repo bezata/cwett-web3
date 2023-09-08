@@ -3,8 +3,9 @@ import Image from "next/image";
 import person from "../images/person.svg";
 import CommentsCard from "./comments";
 import SendComment from "./sendComment";
+import { usePrepareContractWrite } from "wagmi";
 
-const CommentsModals = ({ setOpenCommentsModal }) => {
+const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
   const handleCloseCommentsModal = () => {
     setOpenCommentsModal(false);
   };
@@ -26,9 +27,9 @@ const CommentsModals = ({ setOpenCommentsModal }) => {
             </h1>{" "}
             <div className="shadow shadow-purple-600 rounded-b-xl mt-3 flex flex-col items-center border border-purple-600 justify-center">
               <h2 className="text-xs font-semibold mt-5 text-white">
-                User Address: 0x1234567890
+                User Address: {account}
               </h2>
-              <h3 className="text-xs font-semibold text-white">Followers: 0</h3>
+
               <h4 className="text-xs font-semibold mb-5 text-white">
                 Posts: 3
               </h4>
