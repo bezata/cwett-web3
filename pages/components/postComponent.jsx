@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import person from "../images/person.svg";
 import Image from "next/image";
 import CommentsModals from "./commentModal";
@@ -12,7 +11,10 @@ const PostComponent = () => {
   };
 
   return (
-    <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 ">
+    <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 relative">
+      <small className="absolute top-2 right-2 text-xs text-white">
+        22h ago
+      </small>
       <div className="flex items-start px-4 py-6">
         <Image
           className="object-cover w-12 h-12 mr-4 rounded-full shadow"
@@ -20,16 +22,16 @@ const PostComponent = () => {
           alt="avatar"
         />
         <div className="">
-          <div className="flex items-center justify-between">
-            <h2 className="-mt-1 text-lg font-semibold text-white">A </h2>
-            <small className="text-sm text-white">22h ago</small>
+          <div className="flex items-start flex-col">
+            {" "}
+            <h2 className="text-lg font-semibold text-white mt-3">A</h2>{" "}
+            <p className="text-md text-white mt-2">Hi!</p>
           </div>
 
-          <p className="mt-3 text-sm text-white">A</p>
           <div className="flex items-center mt-4">
             <button
               onClick={handleLiked}
-              className="flex mr-2 text-sm text-white "
+              className="flex mr-2 text-sm text-white"
             >
               <svg
                 fill={isLiked ? "#EEFFFF" : "none"}
@@ -48,7 +50,7 @@ const PostComponent = () => {
             </button>
             <button
               onClick={() => setOpenCommentsModal(true)}
-              className="flex mr-2 text-sm text-white-700 "
+              className="flex mr-2 text-sm text-white-700"
             >
               <svg
                 fill="none"

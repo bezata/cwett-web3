@@ -1,13 +1,13 @@
-import React from "react";
 import Image from "next/image";
 import person from "../images/person.svg";
-import CommentsCard from "./comments";
-import SendComment from "./sendComment";
+import { useState } from "react";
+import PostComponent from "./postComponent";
 
-const CommentsModals = ({ setOpenCommentsModal }) => {
-  const handleCloseCommentsModal = () => {
-    setOpenCommentsModal(false);
+const UserProfileModal = ({ setOpenProfileModal }) => {
+  const handleCloseProfileModal = () => {
+    setOpenProfileModal(false);
   };
+
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto bg-gradient-to-r from-purple-800 to-blue-800">
       <div className="flex md:w-auto w-[90%] mx-auto items-center justify-center min-h-screen">
@@ -22,8 +22,11 @@ const CommentsModals = ({ setOpenCommentsModal }) => {
               height={50}
             />
             <h1 className="text-lg font-semibold text-center mb-1 text-white">
-              Comments
+              Cwetts
             </h1>{" "}
+            <button className="text-white bg-transparent shadow shadow-purple-600 focus:ring-4 focus:outline-none border hover:border-purple-500 border-purple-600 font-medium rounded-lg text-sm px-5 py-2.5">
+              Follow
+            </button>
             <div className="shadow shadow-purple-600 rounded-b-xl mt-3 flex flex-col items-center border border-purple-600 justify-center">
               <h2 className="text-xs font-semibold mt-5 text-white">
                 User Address: 0x1234567890
@@ -33,11 +36,11 @@ const CommentsModals = ({ setOpenCommentsModal }) => {
                 Posts: 3
               </h4>
             </div>
-            <div className="flex gap-2 relative"></div>{" "}
-            <SendComment></SendComment>
+            <PostComponent></PostComponent>
+            <div className="flex gap-2 relative"></div>
             <div className="flex flex-row mt-10 justify-between">
               <button
-                onClick={handleCloseCommentsModal}
+                onClick={handleCloseProfileModal}
                 className="absolute top-3 right-3 text-white hover:text-gray-300 focus:outline-none"
               >
                 <svg
@@ -53,7 +56,6 @@ const CommentsModals = ({ setOpenCommentsModal }) => {
                 </svg>
               </button>{" "}
             </div>
-            <CommentsCard></CommentsCard>
           </div>
         </div>
       </div>
@@ -61,4 +63,4 @@ const CommentsModals = ({ setOpenCommentsModal }) => {
   );
 };
 
-export default CommentsModals;
+export default UserProfileModal;
