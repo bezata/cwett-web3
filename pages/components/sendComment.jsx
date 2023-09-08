@@ -2,10 +2,10 @@ import React from "react";
 import Image from "next/image";
 import person from "../images/person.svg";
 
-const SendTweet = () => {
+const SendComment = () => {
   return (
-    <div className="mx-auto transform -translate-y-5 bg-transparent  w-100 md:w-10/12 mt-11 sm:w-10/12 shadow-xl shadow-purple-800 border border-purple-800 rounded-2xl">
-      <section className="p-3 border-b border-purple-800 shadow shadow-purple-800"></section>
+    <div className="mx-auto transform -translate-y-5 bg-transparent shadow-xl w-100 md:w-10/12 mt-11 sm:w-10/12  border border-purple-800 rounded-2xl">
+      <section className="p-3 border-b border-gray-600"></section>
       <section className="flex w-full px-3 py-2">
         <div className="mr-1">
           <Image src={person} alt="avatar" width={50} height={50} />
@@ -35,7 +35,7 @@ const SendTweet = () => {
             </div>
             <div>
               <button className="px-3 py-2 text-base font-bold text-white transition duration-500 ease-in-out bg-purple-600 rounded-full hover:bg-opacity-100 text-opacity-90 hover:text-opacity-100 focus:outline-none">
-                Cwett
+                Send
               </button>
             </div>
           </div>
@@ -44,5 +44,4 @@ const SendTweet = () => {
     </div>
   );
 };
-
-export default SendTweet;
+export default SendComment;
