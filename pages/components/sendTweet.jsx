@@ -5,7 +5,7 @@ import { useState } from "react";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import abi from "../contracts/CweetABI.json";
 
-const contract = "0x7D288657D5A11e0c3557Fd18250d36EC3b42b460";
+const contract = "0x641B540A367fe708a47cd709EFE8e5834fdC49AF";
 const CweetABI = abi;
 const SendTweet = () => {
   const [CweetText, setCweetText] = useState("");

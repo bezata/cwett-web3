@@ -3,12 +3,32 @@ import Image from "next/image";
 import person from "../images/person.svg";
 import CommentsCard from "./comments";
 import SendComment from "./sendComment";
-import { usePrepareContractWrite } from "wagmi";
+import { useContractRead } from "wagmi";
+import { useState, useEffect } from "react";
+import abi from "../contracts/CweetABI.json";
+
+const contract = "0x641B540A367fe708a47cd709EFE8e5834fdC49AF";
+const CweetABI = abi;
 
 const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
   const handleCloseCommentsModal = () => {
     setOpenCommentsModal(false);
   };
+
+  const [cweets, setCweet] = useState([]);
+
+  const { data: cweet } = useContractRead({
+    address: contract,
+    abi: CweetABI,
+    functionName: "getCommentsForCwett",
+    args: [ID],
+    watch: true,
+  });
+
+  useEffect(() => {
+    setCweet(cweet);
+  }, [cweet]);
+
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto bg-gradient-to-r from-purple-800 to-blue-800">
       <div className="flex md:w-auto w-[90%] mx-auto items-center justify-center min-h-screen">
@@ -25,17 +45,13 @@ const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
             <h1 className="text-lg font-semibold text-center mb-1 text-white">
               Comments
             </h1>{" "}
-            <div className="shadow shadow-purple-600 rounded-b-xl mt-3 flex flex-col items-center border border-purple-600 justify-center">
-              <h2 className="text-xs font-semibold mt-5 text-white">
+            <div className="  mt-3 flex flex-col items-center  justify-center">
+              <h2 className="text-xs font-semibold text-white">
                 User Address: {account}
               </h2>
-
-              <h4 className="text-xs font-semibold mb-5 text-white">
-                Posts: 3
-              </h4>
             </div>
             <div className="flex gap-2 relative"></div>{" "}
-            <SendComment></SendComment>
+            <SendComment ID={ID}></SendComment>
             <div className="flex flex-row mt-10 justify-between">
               <button
                 onClick={handleCloseCommentsModal}
@@ -54,7 +70,15 @@ const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
                 </svg>
               </button>{" "}
             </div>
-            <CommentsCard></CommentsCard>
+            {cweets?.map((latestCweet, index) => (
+              <CommentsCard
+                key={index}
+                cweetID={index}
+                user={latestCweet.commenter || ""}
+                cweet={latestCweet.commentText || ""}
+                timeStamp={latestCweet.timestamp?.toString() || ""}
+              />
+            ))}
           </div>
         </div>
       </div>

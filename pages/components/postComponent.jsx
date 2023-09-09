@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import person from "../images/person.svg";
 import Image from "next/image";
 import CommentsModals from "./commentModal";
@@ -7,10 +7,11 @@ import {
   usePrepareContractWrite,
   useContractWrite,
   useWalletClient,
+  useContractRead,
 } from "wagmi";
 import UserProfileModal from "./profileModal";
 
-const contract = "0x7D288657D5A11e0c3557Fd18250d36EC3b42b460";
+const contract = "0x641B540A367fe708a47cd709EFE8e5834fdC49AF";
 const CweetABI = abi;
 const PostComponent = ({
   user,
@@ -23,8 +24,33 @@ const PostComponent = ({
   const [isLiked, setIsLiked] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const [openProfileModal, setOpenProfileModal] = useState(false);
-
+  const [timeAgo, setTimeAgo] = useState("");
+  const [likeValue, setLikeValue] = useState(false);
   const { data: walletClient } = useWalletClient();
+  const { data: isUserLiked } = useContractRead({
+    address: contract,
+    abi: CweetABI,
+    functionName: "cwettLikes",
+    args: [cweetID, walletClient?.account.address],
+    watch: true,
+  });
+  useEffect(() => {
+    const currentTime = new Date().getTime() / 1000;
+    const postTime = parseInt(timeStamp);
+
+    const timeDifference = currentTime - postTime;
+
+    if (timeDifference < 60) {
+      setTimeAgo(`${Math.floor(timeDifference)} seconds ago`);
+    } else if (timeDifference < 3600) {
+      setTimeAgo(`${Math.floor(timeDifference / 60)} minutes ago`);
+    } else if (timeDifference < 86400) {
+      setTimeAgo(`${Math.floor(timeDifference / 3600)} hours ago`);
+    } else {
+      setTimeAgo(`${Math.floor(timeDifference / 86400)} days ago`);
+    }
+  }, [timeStamp]);
+
   const { config: likes } = usePrepareContractWrite({
     address: contract,
     abi: CweetABI,
@@ -37,17 +63,27 @@ const PostComponent = ({
     functionName: "unlikeCwett",
     args: [cweetID],
   });
+
   const { write: like } = useContractWrite(likes);
   const { write: unlike } = useContractWrite(unlikes);
 
+  useEffect(() => {
+    if (isUserLiked != undefined) {
+      setLikeValue(isUserLiked[1]);
+    }
+    if (likeValue === true) {
+      setIsLiked(true);
+    } else if (likeValue === false) {
+      setIsLiked(false);
+    }
+  }, [isUserLiked, likeValue]);
   const handleLiked = async () => {
     if (walletClient != undefined) {
       try {
         if (!isLiked) {
-          setIsLiked(true);
           await like?.();
-        } else {
-          setIsLiked(false);
+        }
+        if (isLiked) {
           await unlike?.();
         }
       } catch (error) {
@@ -59,7 +95,7 @@ const PostComponent = ({
   return (
     <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 relative">
       <small className="absolute top-2 right-2 text-xs text-white">
-        {timeStamp}
+        {timeAgo}
       </small>
       <div className="flex items-start px-4 py-6">
         <button onClick={() => setOpenProfileModal(true)}>

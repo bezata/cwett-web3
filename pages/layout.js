@@ -4,33 +4,20 @@ import PostComponent from "./components/postComponent";
 import SendTweet from "./components/sendTweet.jsx";
 import abi from "./contracts/CweetABI.json";
 import { useContractRead } from "wagmi";
-import { usePrepareContractWrite } from "wagmi";
+import { useWalletClient } from "wagmi";
 
-const contract = "0x7D288657D5A11e0c3557Fd18250d36EC3b42b460";
+const contract = "0x641B540A367fe708a47cd709EFE8e5834fdC49AF";
 const CweetABI = abi;
 
 const Layout = () => {
-  const [cweetCounts, setCweetCount] = useState("0");
   const [cweets, setCweet] = useState([]);
-  const { data: cweetCount } = useContractRead({
-    address: contract,
-    abi: CweetABI,
-    functionName: "CwettCount",
-  });
-
-  useEffect(() => {
-    if (cweetCount !== undefined) {
-      setCweetCount(cweetCount.toString() - 1);
-    }
-  }, [cweetCount]);
-
+  const walletClient = useWalletClient();
   const { data: cweet } = useContractRead({
     address: contract,
     abi: CweetABI,
     functionName: "getAllCwetts",
     watch: true,
   });
-
   useEffect(() => {
     setCweet(cweet);
   }, [cweet]);
