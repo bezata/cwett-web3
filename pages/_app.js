@@ -1,5 +1,10 @@
 import '@/styles/globals.css'
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
+import {
+  configureChains,
+  createConfig,
+  WagmiConfig,
+  useWalletClient,
+} from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { celoAlfajores } from "wagmi/chains";
 import "@rainbow-me/rainbowkit/styles.css";

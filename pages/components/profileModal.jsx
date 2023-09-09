@@ -5,7 +5,7 @@ import PostComponent from "./postComponent";
 import { useWalletClient, useContractRead } from "wagmi";
 import abi from "../contracts/CweetABI.json";
 
-const contract = "0x641B540A367fe708a47cd709EFE8e5834fdC49AF";
+const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 const UserProfileModal = ({ setOpenProfileModal, account }) => {
   const handleCloseProfileModal = () => {

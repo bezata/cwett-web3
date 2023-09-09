@@ -7,7 +7,7 @@ import { useContractRead } from "wagmi";
 import { useState, useEffect } from "react";
 import abi from "../contracts/CweetABI.json";
 
-const contract = "0x641B540A367fe708a47cd709EFE8e5834fdC49AF";
+const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 
 const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
@@ -15,9 +15,9 @@ const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
     setOpenCommentsModal(false);
   };
 
-  const [cweets, setCweet] = useState([]);
+  const [comments, setCweet] = useState([]);
 
-  const { data: cweet } = useContractRead({
+  const { data: comment } = useContractRead({
     address: contract,
     abi: CweetABI,
     functionName: "getCommentsForCwett",
@@ -26,8 +26,8 @@ const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
   });
 
   useEffect(() => {
-    setCweet(cweet);
-  }, [cweet]);
+    setCweet(comment);
+  }, [comment]);
 
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto bg-gradient-to-r from-purple-800 to-blue-800">
@@ -70,13 +70,13 @@ const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
                 </svg>
               </button>{" "}
             </div>
-            {cweets?.map((latestCweet, index) => (
+            {comments?.map((latestComment, index) => (
               <CommentsCard
                 key={index}
                 cweetID={index}
-                user={latestCweet.commenter || ""}
-                cweet={latestCweet.commentText || ""}
-                timeStamp={latestCweet.timestamp?.toString() || ""}
+                user={latestComment.commenter || ""}
+                cweet={latestComment.commentText || ""}
+                timeStamp={latestComment.timestamp?.toString() || ""}
               />
             ))}
           </div>

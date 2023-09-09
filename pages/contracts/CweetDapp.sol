@@ -23,10 +23,11 @@ contract CwettDapp {
 
     mapping(uint256 => Cwett) public cwetts;
     mapping(address => UserProfile) public users;
-    mapping(uint256 => Comment[]) public cwettComments;
     mapping(uint256 => mapping(address => Like)) public cwettLikes;
 
     uint256 public CwettCount;
+
+    mapping(uint256 => Comment[]) public commentsByCwettId;
 
     struct UserProfile {
         address userAddress;
@@ -47,9 +48,7 @@ contract CwettDapp {
         string commentText
     );
 
-    constructor() {
-        CwettCount = 0;
-    }
+    constructor() {}
 
     function createCwett(string memory _cwettText) public {
         require(bytes(_cwettText).length > 0, "Cwett text cannot be empty");
@@ -80,15 +79,27 @@ contract CwettDapp {
             timestamp: block.timestamp
         });
 
-        cwettComments[_CwettId].push(comment);
+        commentsByCwettId[_CwettId].push(comment);
         cwetts[_CwettId].commentsCount++;
 
         emit CommentedCwett(_CwettId, msg.sender, _commentText);
     }
 
+    function getCommentsForCwett(uint256 _CwettId)
+        public
+        view
+        returns (Comment[] memory)
+    {
+        require(_CwettId < CwettCount, "Cwett does not exist");
+        return commentsByCwettId[_CwettId];
+    }
+
     function likeCwett(uint256 _CwettId) public {
         require(_CwettId < CwettCount, "Cwett does not exist");
-        require(!cwettLikes[_CwettId][msg.sender].hasLiked, "You already liked this Cwett");
+        require(
+            !cwettLikes[_CwettId][msg.sender].hasLiked,
+            "You already liked this Cwett"
+        );
 
         cwetts[_CwettId].likes++;
         cwettLikes[_CwettId][msg.sender].hasLiked = true;
@@ -98,7 +109,10 @@ contract CwettDapp {
 
     function unlikeCwett(uint256 _CwettId) public {
         require(_CwettId < CwettCount, "Cwett does not exist");
-        require(cwettLikes[_CwettId][msg.sender].hasLiked, "You haven't liked this Cwett");
+        require(
+            cwettLikes[_CwettId][msg.sender].hasLiked,
+            "You haven't liked this Cwett"
+        );
 
         cwetts[_CwettId].likes--;
         cwettLikes[_CwettId][msg.sender].hasLiked = false;
@@ -106,7 +120,45 @@ contract CwettDapp {
         emit UnlikedCwett(_CwettId, msg.sender);
     }
 
-    function getUserCwetts(address _user) public view returns (uint256[] memory) {
+    function getUserCwetts(address _user)
+        public
+        view
+        returns (uint256[] memory)
+    {
         return users[_user].cwetts;
+    }
+
+    function getAllCwetts() public view returns (Cwett[] memory) {
+        Cwett[] memory allCwetts = new Cwett[](CwettCount);
+        for (uint256 i = 0; i < CwettCount; i++) {
+            allCwetts[i] = cwetts[i];
+        }
+        return allCwetts;
+    }
+
+    function getCwettsDetailsByUser(address _user)
+        public
+        view
+        returns (Cwett[] memory)
+    {
+        UserProfile storage user = users[_user];
+        uint256[] memory userCwetts = user.cwetts;
+        uint256 numCwetts = userCwetts.length;
+
+        Cwett[] memory details = new Cwett[](numCwetts);
+
+        for (uint256 i = 0; i < numCwetts; i++) {
+            uint256 cwettId = userCwetts[i];
+            Cwett storage cwett = cwetts[cwettId];
+            details[i] = Cwett({
+                timestamp: cwett.timestamp,
+                cwettText: cwett.cwettText,
+                userAddress: cwett.userAddress,
+                likes: cwett.likes,
+                commentsCount: cwett.commentsCount
+            });
+        }
+
+        return details;
     }
 }
