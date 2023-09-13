@@ -4,10 +4,17 @@ import person from "../images/person.svg";
 import { useState } from "react";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import abi from "../contracts/CweetABI.json";
+// Import alert component
+import LoadingAlert from './alerts/LoadingAlert';
+import ErrorAlert from './alerts/ErrorAlert';
 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 const SendTweet = () => {
+  // Loading state
+  const [loading, setLoading] = useState(false);
+  // Set error state
+  const [error, setError] = useState(false);
   const [CweetText, setCweetText] = useState("");
   const { config: cweet } = usePrepareContractWrite({
     address: contract,
@@ -18,15 +25,24 @@ const SendTweet = () => {
   const { write: sendCweet } = useContractWrite(cweet);
 
   const handleCweet = async () => {
-    try {
-      await sendCweet?.();
+    try { 
+      setLoading(true);
+      const tx = sendCweet();
+      await tx.wait();
     } catch (error) {
+      setError(true);
       console.error("Error when cweeting:", error);
+    } finally {
+      setCweetText("");
+      setLoading(false);
     }
   };
 
   return (
-    <div className="mx-auto transform -translate-y-5 bg-transparent  w-100 md:w-10/12 mt-11 sm:w-10/12 shadow-xl shadow-purple-800 border border-purple-800 rounded-2xl">
+    <>
+    {loading && <LoadingAlert message="Sending cweet, please wait..." />}
+    {error && <ErrorAlert message="Error while sending cweet, please try again later" />}
+    <div className="mx-auto transform -translate-y-5 bg-transparent w-100 md:w-10/12 mt-11 sm:w-10/12 shadow-xl shadow-purple-800 border border-purple-800 rounded-2xl">
       <section className="p-3 border-b border-purple-800 shadow shadow-purple-800"></section>
       <section className="flex w-full px-3 py-2">
         <div className="mr-1">
@@ -54,6 +70,7 @@ const SendTweet = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

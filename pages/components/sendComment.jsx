@@ -8,12 +8,19 @@ import {
   useWalletClient,
 } from "wagmi";
 import { useState } from "react";
+// Import alert component
+import LoadingAlert from './alerts/LoadingAlert';
+import ErrorAlert from './alerts/ErrorAlert';
 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 const SendComment = (ID) => {
   const [CommentText, setCommentText] = useState("");
   const [newID, setNewID] = useState("");
+  // Loading state
+  const [loading, setLoading] = useState(false);
+  // Set error state
+  const [error, setError] = useState(false);
 
   const { config: sendComment } = usePrepareContractWrite({
     address: contract,
@@ -28,13 +35,19 @@ const SendComment = (ID) => {
   const { write: sendComments } = useContractWrite(sendComment);
 
   const handleComment = async () => {
+    setLoading(true);
     try {
-      await sendComments?.();
+      sendComments?.();
+      setLoading(false);
+      console.log(loading);
     } catch (error) {
       console.error("Error when commenting:", error);
     }
   };
   return (
+    <>
+    {loading && <LoadingAlert message="Sending comment, please wait..." />}
+    {error && <ErrorAlert message="Error while sending comment, please try again later" />}
     <div className="mx-auto transform -translate-y-5 bg-transparent shadow-xl w-100 md:w-10/12 mt-11 sm:w-10/12  border border-purple-800 rounded-2xl">
       <section className="p-3 border-b border-gray-600"></section>
       <section className="flex w-full px-3 py-2">
@@ -63,6 +76,7 @@ const SendComment = (ID) => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 export default SendComment;
