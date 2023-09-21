@@ -7,7 +7,7 @@ import abi from "../contracts/CweetABI.json";
 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
-const SendTweet = () => {
+const SendTweet = ({ notify }) => {
   const [CweetText, setCweetText] = useState("");
   const { config: cweet } = usePrepareContractWrite({
     address: contract,
@@ -18,10 +18,14 @@ const SendTweet = () => {
   const { write: sendCweet } = useContractWrite(cweet);
 
   const handleCweet = async () => {
-    try {
-      await sendCweet?.();
-    } catch (error) {
-      console.error("Error when cweeting:", error);
+    if (CweetText.trim().length > 0) {
+      try {
+        await sendCweet?.();
+      } catch (error) {
+        console.error("Error when cweeting:", error);
+      }
+    } else {
+      notify("Cwett text cannot be empty.", "error");
     }
   };
 
@@ -39,6 +43,7 @@ const SendTweet = () => {
             placeholder="What's happening?"
             value={CweetText}
             onChange={(e) => setCweetText(e.target.value)}
+            required
           ></textarea>
           <div className="flex items-center justify-between pt-2 border-t border-gray-700">
             <div className="flex"></div>

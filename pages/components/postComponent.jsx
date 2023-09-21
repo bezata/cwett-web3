@@ -20,6 +20,7 @@ const PostComponent = ({
   commentCount,
   timeStamp,
   cweetID,
+  notify,
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);

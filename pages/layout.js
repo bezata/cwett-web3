@@ -3,8 +3,8 @@ import Navbar from "./components/navbar.jsx"; // Import the Navbar component
 import PostComponent from "./components/postComponent";
 import SendTweet from "./components/sendTweet.jsx";
 import abi from "./contracts/CweetABI.json";
-import { useContractRead } from "wagmi";
-import { useWalletClient } from "wagmi";
+import { useContractRead, useAccount } from "wagmi";
+
 import Link from "next/link.js";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,7 +14,15 @@ const CweetABI = abi;
 
 const Layout = () => {
   const [cweets, setCweet] = useState([]);
-  const { data: walletClient } = useWalletClient();
+  const account = useAccount({
+    onConnect({ address }) {
+      notify(`Connected with ${address}`, "info");
+    },
+    onDisconnect() {
+      notify("Please Connect Your Wallet to use DAPP's features", "info");
+    },
+  });
+
   const { data: cweet } = useContractRead({
     address: contract,
     abi: CweetABI,
@@ -47,19 +55,17 @@ const Layout = () => {
     }
   };
   useState(() => {
-    if (walletClient === undefined) {
+    if (!account) {
       notify("Please Connect Your Wallet to use DAPP's features", "info");
-    } else if (walletClient?.account.address) {
-      notify(`Connected with ${walletClient?.account.address}`, "success");
     }
-  });
+  })[account];
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-auto min-w-screen bg-gradient-to-r from-purple-800/80 to-blue-800/60 ">
       <Navbar />
       <main className="flex-grow w-1/2">
         <div className="container mx-auto text-center ">
-          <SendTweet />
+          <SendTweet notify={notify} />
           {cweets?.map((latestCweet, index) => (
             <PostComponent
               key={index}
@@ -69,6 +75,7 @@ const Layout = () => {
               timeStamp={latestCweet.timestamp?.toString() || ""}
               likeCount={latestCweet.likes?.toString() || "0"}
               commentCount={latestCweet.commentsCount?.toString() || "0"}
+              notify={notify}
             />
           ))}
         </div>
