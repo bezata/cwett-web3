@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Image from "next/image";
 import person from "../images/person.svg";
 import { useState } from "react";
@@ -9,18 +9,26 @@ const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 const SendTweet = ({ notify }) => {
   const [CweetText, setCweetText] = useState("");
+  const [Loading, setLoading] = useState(false);
+  const [Success, setSuccess] = useState(false);
+  const [Error, setIsError] = useState(false);
   const { config: cweet } = usePrepareContractWrite({
     address: contract,
     abi: CweetABI,
     functionName: "createCwett",
     args: [CweetText],
   });
-  const { write: sendCweet } = useContractWrite(cweet);
+  const {
+    write: sendCweet,
+    isSuccess,
+    isLoading,
+    isError,
+  } = useContractWrite(cweet);
 
   const handleCweet = async () => {
     if (CweetText.trim().length > 0) {
+      await sendCweet?.();
       try {
-        await sendCweet?.();
       } catch (error) {
         console.error("Error when cweeting:", error);
       }
@@ -28,6 +36,34 @@ const SendTweet = ({ notify }) => {
       notify("Cwett text cannot be empty.", "error");
     }
   };
+
+  useEffect(() => {
+    setLoading(isLoading);
+    setSuccess(isSuccess);
+    setIsError(isError);
+    if (Loading === true) {
+      setLoading(false);
+    }
+    if (Success === true) {
+      setSuccess(false);
+    }
+    if (Error === true) {
+      setIsError(false);
+    }
+  }, [isLoading, isSuccess, isError]);
+
+  useEffect(() => {
+    if (Loading === true) {
+      notify("Cweeting...", "info");
+    }
+    if (Success === true) {
+      notify("Cweeted Successfully", "success");
+      setCweetText("");
+    }
+    if (Error === true) {
+      notify("Cwett Cancelled", "error");
+    }
+  }, [Success, Loading, Error]);
 
   return (
     <div className="mx-auto transform -translate-y-5 bg-transparent  w-100 md:w-10/12 mt-11 sm:w-10/12 shadow-xl shadow-purple-800 border border-purple-800 rounded-2xl">

@@ -27,6 +27,8 @@ const PostComponent = ({
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [timeAgo, setTimeAgo] = useState("");
   const [likeValue, setLikeValue] = useState(false);
+  const [isUserLikedCwett, setIsUserLikedCwett] = useState("");
+
   const { data: walletClient } = useWalletClient();
   const { data: isUserLiked } = useContractRead({
     address: contract,
@@ -64,14 +66,28 @@ const PostComponent = ({
     functionName: "unlikeCwett",
     args: [cweetID],
   });
-
-  const { write: like } = useContractWrite(likes);
-  const { write: unlike } = useContractWrite(unlikes);
+  useEffect(() => {
+    setIsUserLikedCwett(isUserLiked?.[1]);
+  }, [isUserLiked]);
+  const {
+    write: like,
+    isSuccess: likeSuccessful,
+    isError: errorLike,
+    isLoading: likeLoading,
+  } = useContractWrite(likes);
+  const {
+    write: unlike,
+    isSuccess: unlikeSuccesful,
+    isError: errorUnlike,
+    isLoading: unlikeLoading,
+  } = useContractWrite(unlikes);
+  useEffect(() => {
+    if (isUserLikedCwett != undefined) {
+      setLikeValue(isUserLikedCwett);
+    }
+  }, [isUserLikedCwett]);
 
   useEffect(() => {
-    if (isUserLiked != undefined) {
-      setLikeValue(isUserLiked[1]);
-    }
     if (likeValue === true) {
       setIsLiked(true);
     } else if (likeValue === false) {
@@ -92,6 +108,34 @@ const PostComponent = ({
       }
     }
   };
+
+  useEffect(() => {
+    if (likeLoading === true) {
+      notify("Liking...", "info");
+    }
+    if (unlikeLoading === true) {
+      notify("Unliking...", "info");
+    }
+    if (likeSuccessful === true) {
+      notify("Liked Successfully", "success");
+    }
+    if (unlikeSuccesful === true) {
+      notify("Unliked Successfully", "success");
+    }
+    if (errorLike === true) {
+      notify("Like Cancelled", "error");
+    }
+    if (errorUnlike === true) {
+      notify("Unlike Cancelled", "error");
+    }
+  }, [
+    likeLoading,
+    unlikeLoading,
+    likeSuccessful,
+    unlikeSuccesful,
+    errorLike,
+    errorUnlike,
+  ]);
 
   return (
     <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 relative">
@@ -159,6 +203,7 @@ const PostComponent = ({
           setOpenCommentsModal={setOpenCommentsModal}
           ID={cweetID}
           account={user}
+          notify={notify}
         />
       )}
       {openProfileModal && (

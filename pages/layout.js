@@ -14,12 +14,13 @@ const CweetABI = abi;
 
 const Layout = () => {
   const [cweets, setCweet] = useState([]);
+
   const account = useAccount({
     onConnect({ address }) {
-      notify(`Connected with ${address}`, "info");
+      notify(`Connected with ${address}`, "success");
     },
     onDisconnect() {
-      notify("Please Connect Your Wallet to use DAPP's features", "info");
+      notify("Please Connect Your Wallet to use DAPP's features", "warn");
     },
   });
 
@@ -35,7 +36,7 @@ const Layout = () => {
   const notify = (message, type = "info") => {
     const options = {
       position: toast.POSITION.BOTTOM_RIGHT,
-      theme: "light",
+      theme: "dark",
     };
     switch (type) {
       case "error":
@@ -56,7 +57,7 @@ const Layout = () => {
   };
   useState(() => {
     if (!account) {
-      notify("Please Connect Your Wallet to use DAPP's features", "info");
+      notify("Please Connect Your Wallet to use DAPP's features", "warn");
     }
   })[account];
 
@@ -95,7 +96,7 @@ const Layout = () => {
           </svg>
         </Link>
       </div>
-      <ToastContainer limit={1}></ToastContainer>
+      <ToastContainer theme="dark"></ToastContainer>
     </div>
   );
 };

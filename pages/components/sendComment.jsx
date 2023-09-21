@@ -2,18 +2,40 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import person from "../images/person.svg";
 import abi from "../contracts/CweetABI.json";
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWalletClient,
-} from "wagmi";
+import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 const SendComment = (ID) => {
   const [CommentText, setCommentText] = useState("");
   const [newID, setNewID] = useState("");
+  const [Loading, setLoading] = useState(false);
+  const [Success, setSuccess] = useState(false);
+  const [Error, setIsError] = useState(false);
+  const notify = (message, type = "info") => {
+    const options = {
+      position: toast.POSITION.BOTTOM_RIGHT,
+      theme: "dark",
+    };
+    switch (type) {
+      case "error":
+        toast.error(message, options);
+        break;
+      case "success":
+        toast.success(message, options);
+        break;
+      case "info":
+        toast.info(message, options);
+        break;
+      case "warn":
+        toast.warn(message, options);
+        break;
+      default:
+        toast(message, options);
+    }
+  };
 
   const { config: sendComment } = usePrepareContractWrite({
     address: contract,
@@ -25,15 +47,51 @@ const SendComment = (ID) => {
   useEffect(() => {
     setNewID(ID.ID);
   }, [ID]);
-  const { write: sendComments } = useContractWrite(sendComment);
+  const {
+    write: sendComments,
+    isSuccess,
+    isLoading,
+    isError,
+  } = useContractWrite(sendComment);
 
   const handleComment = async () => {
-    try {
-      await sendComments?.();
-    } catch (error) {
-      console.error("Error when commenting:", error);
+    if (CommentText.trim().length > 0) {
+      try {
+        await sendComments?.();
+      } catch (error) {
+        console.error("Error when commenting:", error);
+      }
+    } else {
+      notify("Comment text cannot be empty.", "error");
     }
   };
+  useEffect(() => {
+    setLoading(isLoading);
+    setSuccess(isSuccess);
+    setIsError(isError);
+    if (Loading === true) {
+      setLoading(false);
+    }
+    if (Success === true) {
+      setSuccess(false);
+    }
+    if (Error === true) {
+      setIsError(false);
+    }
+  }, [isLoading, isSuccess, isError]);
+
+  useEffect(() => {
+    if (Loading === true) {
+      notify("Commenting...", "info");
+    }
+    if (Success === true) {
+      notify("Commented Successfully", "success");
+      setCommentText("");
+    }
+    if (Error === true) {
+      notify("Comment Cancelled", "error");
+    }
+  }, [Success, Loading, Error]);
   return (
     <div className="mx-auto transform -translate-y-5 bg-transparent shadow-xl w-100 md:w-10/12 mt-11 sm:w-10/12  border border-purple-800 rounded-2xl">
       <section className="p-3 border-b border-gray-600"></section>
