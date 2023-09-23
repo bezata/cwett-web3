@@ -9,10 +9,15 @@ import { useWalletClient } from "wagmi";
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 const SendTweet = ({ notify }) => {
+  // State to store the text of the Cwett
   const [CweetText, setCweetText] = useState("");
+  // State to manage loading state
   const [Loading, setLoading] = useState(false);
+  // State to manage success state
   const [Success, setSuccess] = useState(false);
+  // State to manage error state
   const [Error, setIsError] = useState(false);
+  // Fetch wallet client data
   const { config: cweet } = usePrepareContractWrite({
     address: contract,
     abi: CweetABI,
@@ -20,6 +25,7 @@ const SendTweet = ({ notify }) => {
     args: [CweetText],
   });
   const { data: walletClient } = useWalletClient();
+  // Write the Cwett to the blockchain
   const {
     write: sendCweet,
     isSuccess,
@@ -27,23 +33,28 @@ const SendTweet = ({ notify }) => {
     isError,
   } = useContractWrite(cweet);
 
+  // Function to handle Cwetting
   const handleCweet = async () => {
     if (walletClient?.account.address === undefined) {
+      // Notify if the wallet is not connected
       notify("Please connect wallet to cweet.", "error");
     }
     if (walletClient?.account.address != undefined) {
       if (CweetText.trim().length > 0) {
+        // If Cwett text is not empty, send the Cwett
         await sendCweet?.();
         try {
         } catch (error) {
           console.error("Error when cweeting:", error);
         }
       } else {
+        // Notify if the Cwett text is empty
         notify("Cwett text cannot be empty.", "error");
       }
     }
   };
 
+  // Update state based on loading, success, and error states
   useEffect(() => {
     setLoading(isLoading);
     setSuccess(isSuccess);
@@ -59,12 +70,14 @@ const SendTweet = ({ notify }) => {
     }
   }, [isLoading, isSuccess, isError]);
 
+  // Notify based on loading, success, and error states
   useEffect(() => {
     if (Loading === true) {
       notify("Cweeting...", "info");
     }
     if (Success === true) {
       notify("Cweeted Successfully", "success");
+      // Reset the Cwett text on success
       setCweetText("");
     }
     if (Error === true) {

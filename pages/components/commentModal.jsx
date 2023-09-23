@@ -7,17 +7,19 @@ import { useContractRead } from "wagmi";
 import { useState, useEffect } from "react";
 import abi from "../contracts/CweetABI.json";
 
-
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
 
 const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
+  // Function to close the comments modal
   const handleCloseCommentsModal = () => {
     setOpenCommentsModal(false);
   };
 
+  // State to store comments
   const [comments, setCweet] = useState([]);
 
+  // Fetch comments using useContractRead
   const { data: comment } = useContractRead({
     address: contract,
     abi: CweetABI,
@@ -26,6 +28,7 @@ const CommentsModals = ({ setOpenCommentsModal, ID, account }) => {
     watch: true,
   });
 
+  // Update the state with fetched comments
   useEffect(() => {
     setCweet(comment);
   }, [comment]);

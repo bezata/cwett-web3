@@ -11,8 +11,11 @@ import {
 } from "wagmi";
 import UserProfileModal from "./profileModal";
 
+// Contract address and ABI 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
+
+// PostComponent component to display a cweet
 const PostComponent = ({
   user,
   likeCount,
@@ -22,6 +25,7 @@ const PostComponent = ({
   cweetID,
   notify,
 }) => {
+  // State variables for the post component
   const [isLiked, setIsLiked] = useState(false);
   const [openCommentsModal, setOpenCommentsModal] = useState(false);
   const [openProfileModal, setOpenProfileModal] = useState(false);
@@ -35,7 +39,10 @@ const PostComponent = ({
   const [successUnlike, setSuccessUnlike] = useState(false);
   const [successLike, setSuccessLike] = useState(false);
 
+  // Get wallet client data and ,,
   const { data: walletClient } = useWalletClient();
+
+  // Check if the user liked the cweet and update the state
   const { data: isUserLiked } = useContractRead({
     address: contract,
     abi: CweetABI,
@@ -44,6 +51,7 @@ const PostComponent = ({
     watch: true,
   });
 
+  // Calculate and set the time ago for the cweet
   useEffect(() => {
     const currentTime = new Date().getTime() / 1000;
     const postTime = parseInt(timeStamp);
@@ -60,38 +68,46 @@ const PostComponent = ({
     }
   }, [timeStamp]);
 
+  // Prepare contract write for liking and unliking a cweet
   const { config: likes } = usePrepareContractWrite({
     address: contract,
     abi: CweetABI,
     functionName: "likeCwett",
     args: [cweetID],
   });
+
   const { config: unlikes } = usePrepareContractWrite({
     address: contract,
     abi: CweetABI,
     functionName: "unlikeCwett",
     args: [cweetID],
   });
+
   useEffect(() => {
     setIsUserLikedCwett(isUserLiked?.[1]);
   }, [isUserLiked]);
+
+  // Use contract write for liking and unliking and get loading, success, and error states
   const {
     write: like,
     isSuccess: likeSuccessful,
     isError: errorLike,
     isLoading: likeLoading,
   } = useContractWrite(likes);
+
   const {
     write: unlike,
-    isSuccess: unlikeSuccesful,
+    isSuccess: unlikeSuccessful,
     isError: errorUnlike,
     isLoading: unlikeLoading,
   } = useContractWrite(unlikes);
+
   useEffect(() => {
     if (isUserLikedCwett != undefined) {
       setLikeValue(isUserLikedCwett);
     }
   }, [isUserLikedCwett]);
+
   useEffect(() => {
     if (likeValue === true) {
       setIsLiked(true);
@@ -99,6 +115,8 @@ const PostComponent = ({
       setIsLiked(false);
     }
   }, [likeValue]);
+
+  // Handle liking and unliking 
   const handleLiked = async () => {
     if (walletClient?.account.address != undefined) {
       if (
@@ -125,13 +143,16 @@ const PostComponent = ({
       notify("Please connect your wallet", "error");
     }
   };
+
+  // Handle loading, success, and error states for liking and unliking and make sure that the states are reset after each action
   useEffect(() => {
     setLoadingLike(likeLoading);
     setLoadingUnlike(unlikeLoading);
     setSuccessLike(likeSuccessful);
-    setSuccessUnlike(unlikeSuccesful);
+    setSuccessUnlike(unlikeSuccessful);
     setErrorsLike(errorLike);
     setErrorsUnlike(errorUnlike);
+
     if (loadingLike === true) {
       setLoadingLike(false);
     }
@@ -154,11 +175,12 @@ const PostComponent = ({
     likeLoading,
     unlikeLoading,
     likeSuccessful,
-    unlikeSuccesful,
+    unlikeSuccessful,
     errorLike,
     errorUnlike,
   ]);
 
+  // Show toast notifications for liking and unliking based on loading, success, and error states
   useEffect(() => {
     if (loadingLike === true) {
       notify("Liking...", "info");
@@ -186,13 +208,16 @@ const PostComponent = ({
     errorsLike,
     errorsUnlike,
   ]);
+
   return (
     <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 relative">
+      {/* Display time ago */}
       <small className="absolute top-2 right-2 text-xs text-white">
         {timeAgo}
       </small>
       <div className="flex items-start px-4 py-6">
         <button onClick={() => setOpenProfileModal(true)}>
+          {/* Display user avatar */}
           <Image
             className="object-cover w-12 h-12 mr-4 rounded-full shadow"
             src={person}
@@ -201,11 +226,14 @@ const PostComponent = ({
         </button>
         <div className="">
           <div className="flex items-start flex-col">
+            {/* Display user's username */}
             <h2 className="text-lg font-semibold text-white mt-3">{user}</h2>
+            {/* Display cweet content */}
             <p className="text-md text-white mt-2">{cweet}</p>
           </div>
 
           <div className="flex items-center mt-4">
+            {/* Like button */}
             <button
               onClick={handleLiked}
               className="flex mr-2 text-sm text-white"
@@ -225,6 +253,7 @@ const PostComponent = ({
               </svg>
               <span>{likeCount}</span>
             </button>
+            {/* Comment button */}
             <button
               onClick={() => setOpenCommentsModal(true)}
               className="flex mr-2 text-sm text-white-700"
@@ -248,6 +277,7 @@ const PostComponent = ({
         </div>
       </div>{" "}
       {openCommentsModal && (
+        // Display the CommentsModals component when the comment button is clicked
         <CommentsModals
           setOpenCommentsModal={setOpenCommentsModal}
           ID={cweetID}
@@ -256,6 +286,7 @@ const PostComponent = ({
         />
       )}
       {openProfileModal && (
+        // Display the UserProfileModal component when the user avatar is clicked
         <UserProfileModal
           setOpenProfileModal={setOpenProfileModal}
           account={user}

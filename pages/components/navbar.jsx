@@ -8,16 +8,19 @@ import { useWalletClient } from "wagmi";
 import UserProfileModal from "./profileModal";
 
 const Navbar = ({ notify }) => {
+  // Get wallet client data
   const { data: walletClient } = useWalletClient();
+  // State to manage the profile modal
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
   return (
-    <div className="w-full bg-transparent z-9 ">
+    <div className="w-full bg-transparent z-9">
       <nav className="flex items-center justify-between w-full px-2 py-2 bg-transparent">
         <Image src={cweetlogo} alt="cweetlogo" width={100} height={100} />
         <div className="absolute rounded-full shadow-lg left-1/2 shadow-purple-700">
           <button
             onClick={() => {
+              // Check if walletClient is defined
               walletClient == undefined
                 ? notify("Please Connect Your Wallet!", "warn")
                 : setOpenProfileModal(true);

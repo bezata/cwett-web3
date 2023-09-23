@@ -2,21 +2,17 @@ import React, { useState, useEffect } from "react";
 import person from "../images/person.svg";
 import Image from "next/image";
 import abi from "../contracts/CweetABI.json";
-import {
-  usePrepareContractWrite,
-  useContractWrite,
-  useWalletClient,
-  useContractRead,
-} from "wagmi";
+import { useWalletClient } from "wagmi";
 import UserProfileModal from "./profileModal";
 
-const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
-const CweetABI = abi;
+const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36"; // Contract address
+const CweetABI = abi; // Contract ABI
+// PostComponent component to display a cweet
 const CommentsCard = ({ user, cweet, timeStamp }) => {
   const [openProfileModal, setOpenProfileModal] = useState(false);
   const [timeAgo, setTimeAgo] = useState("");
   const { data: walletClient } = useWalletClient();
-
+  // Calculate and set the time ago for the cweet
   useEffect(() => {
     const currentTime = new Date().getTime() / 1000;
     const postTime = parseInt(timeStamp);
@@ -33,7 +29,7 @@ const CommentsCard = ({ user, cweet, timeStamp }) => {
       setTimeAgo(`${Math.floor(timeDifference / 86400)} days ago`);
     }
   }, [timeStamp]);
-
+  // Return the post component
   return (
     <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 relative">
       <small className="absolute top-2 right-2 text-xs text-white">

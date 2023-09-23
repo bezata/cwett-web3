@@ -2,17 +2,22 @@ import Image from "next/image";
 import person from "../images/person.svg";
 import { useState, useEffect } from "react";
 import PostComponent from "./postComponent";
-import { useWalletClient, useContractRead } from "wagmi";
+import { useContractRead } from "wagmi";
 import abi from "../contracts/CweetABI.json";
 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
+
 const UserProfileModal = ({ setOpenProfileModal, account }) => {
+  // Function to close the profile modal
   const handleCloseProfileModal = () => {
     setOpenProfileModal(false);
   };
+
+  // State to store user's Cwetts
   const [userCwettsAR, setUserCwettsAR] = useState([]);
 
+  // Fetch user's Cwetts using the useContractRead hook
   const { data: userCwetts } = useContractRead({
     address: contract,
     abi: CweetABI,
@@ -20,6 +25,8 @@ const UserProfileModal = ({ setOpenProfileModal, account }) => {
     args: [account],
     watch: true,
   });
+
+  // Update the userCwettsAR state when userCwetts data changes
   useEffect(() => {
     setUserCwettsAR(userCwetts);
   }, [userCwetts]);
