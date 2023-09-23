@@ -25,6 +25,7 @@ Before you begin, ensure you have the following software/tools installed:
 
 - [Node.js](https://nodejs.org/) - JavaScript runtime
 - [pnpm](https://pnpm.js.org/) - Fast, disk space efficient package manager
+- [REMIX](https://remix.ethereum.org/) - Solidity IDE
 
 ### Installation
 
@@ -45,6 +46,7 @@ Before you begin, ensure you have the following software/tools installed:
  ```bash
  pnpm build
   ```
+4. Deploy contract for new Cwett clean contract on REMIX IDE
  ## Usage
  ### Creating a Cwett
 To create a new cwett (post), follow these steps:
