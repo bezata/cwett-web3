@@ -4,6 +4,7 @@ import person from "../images/person.svg";
 import { useState } from "react";
 import { usePrepareContractWrite, useContractWrite } from "wagmi";
 import abi from "../contracts/CweetABI.json";
+import { useWalletClient } from "wagmi";
 
 const contract = "0x077b173cC02a20A5Fe1bad133b952fF581799b36";
 const CweetABI = abi;
@@ -18,6 +19,7 @@ const SendTweet = ({ notify }) => {
     functionName: "createCwett",
     args: [CweetText],
   });
+  const { data: walletClient } = useWalletClient();
   const {
     write: sendCweet,
     isSuccess,
@@ -26,14 +28,19 @@ const SendTweet = ({ notify }) => {
   } = useContractWrite(cweet);
 
   const handleCweet = async () => {
-    if (CweetText.trim().length > 0) {
-      await sendCweet?.();
-      try {
-      } catch (error) {
-        console.error("Error when cweeting:", error);
+    if (walletClient?.account.address === undefined) {
+      notify("Please connect wallet to cweet.", "error");
+    }
+    if (walletClient?.account.address != undefined) {
+      if (CweetText.trim().length > 0) {
+        await sendCweet?.();
+        try {
+        } catch (error) {
+          console.error("Error when cweeting:", error);
+        }
+      } else {
+        notify("Cwett text cannot be empty.", "error");
       }
-    } else {
-      notify("Cwett text cannot be empty.", "error");
     }
   };
 

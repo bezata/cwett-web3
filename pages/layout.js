@@ -63,7 +63,7 @@ const Layout = () => {
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen overflow-auto min-w-screen bg-gradient-to-r from-purple-800/80 to-blue-800/60 ">
-      <Navbar />
+      <Navbar notify={notify} />
       <main className="flex-grow w-1/2">
         <div className="container mx-auto text-center ">
           <SendTweet notify={notify} />

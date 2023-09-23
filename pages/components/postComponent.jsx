@@ -95,7 +95,7 @@ const PostComponent = ({
     }
   }, [isUserLiked, likeValue]);
   const handleLiked = async () => {
-    if (walletClient != undefined) {
+    if (walletClient?.account.address != undefined) {
       try {
         if (!isLiked) {
           await like?.();
@@ -106,6 +106,9 @@ const PostComponent = ({
       } catch (error) {
         console.error("Error when liking/unliking:", error);
       }
+    }
+    if (walletClient?.account.address == undefined) {
+      notify("Please connect your wallet", "error");
     }
   };
 

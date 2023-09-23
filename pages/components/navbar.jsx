@@ -7,7 +7,7 @@ import person from "../images/person.svg";
 import { useWalletClient } from "wagmi";
 import UserProfileModal from "./profileModal";
 
-const Navbar = () => {
+const Navbar = ({ notify }) => {
   const { data: walletClient } = useWalletClient();
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
@@ -17,8 +17,11 @@ const Navbar = () => {
         <Image src={cweetlogo} alt="cweetlogo" width={100} height={100} />
         <div className="absolute rounded-full shadow-lg left-1/2 shadow-purple-700">
           <button
-            disabled={walletClient == undefined}
-            onClick={() => setOpenProfileModal(true)}
+            onClick={() => {
+              walletClient == undefined
+                ? notify("Please Connect Your Wallet!", "warn")
+                : setOpenProfileModal(true);
+            }}
             className=""
           >
             <Image

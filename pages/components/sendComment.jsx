@@ -2,7 +2,11 @@ import React, { useEffect } from "react";
 import Image from "next/image";
 import person from "../images/person.svg";
 import abi from "../contracts/CweetABI.json";
-import { usePrepareContractWrite, useContractWrite } from "wagmi";
+import {
+  usePrepareContractWrite,
+  useContractWrite,
+  useWalletClient,
+} from "wagmi";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -14,6 +18,7 @@ const SendComment = (ID) => {
   const [Loading, setLoading] = useState(false);
   const [Success, setSuccess] = useState(false);
   const [Error, setIsError] = useState(false);
+  const { data: walletClient } = useWalletClient();
   const notify = (message, type = "info") => {
     const options = {
       position: toast.POSITION.BOTTOM_RIGHT,
@@ -55,14 +60,19 @@ const SendComment = (ID) => {
   } = useContractWrite(sendComment);
 
   const handleComment = async () => {
-    if (CommentText.trim().length > 0) {
-      try {
-        await sendComments?.();
-      } catch (error) {
-        console.error("Error when commenting:", error);
+    if (walletClient?.account.address === undefined) {
+      notify("Please connect wallet to comment.", "error");
+    }
+    if (walletClient?.account.address != undefined) {
+      if (CommentText.trim().length > 0) {
+        try {
+          await sendComments?.();
+        } catch (error) {
+          console.error("Error when commenting:", error);
+        }
+      } else {
+        notify("Comment text cannot be empty.", "error");
       }
-    } else {
-      notify("Comment text cannot be empty.", "error");
     }
   };
   useEffect(() => {
