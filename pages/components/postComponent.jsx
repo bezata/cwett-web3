@@ -28,6 +28,12 @@ const PostComponent = ({
   const [timeAgo, setTimeAgo] = useState("");
   const [likeValue, setLikeValue] = useState(false);
   const [isUserLikedCwett, setIsUserLikedCwett] = useState("");
+  const [errorsUnlike, setErrorsUnlike] = useState(false);
+  const [errorsLike, setErrorsLike] = useState(false);
+  const [loadingUnlike, setLoadingUnlike] = useState(false);
+  const [loadingLike, setLoadingLike] = useState(false);
+  const [successUnlike, setSuccessUnlike] = useState(false);
+  const [successLike, setSuccessLike] = useState(false);
 
   const { data: walletClient } = useWalletClient();
   const { data: isUserLiked } = useContractRead({
@@ -37,10 +43,10 @@ const PostComponent = ({
     args: [cweetID, walletClient?.account.address],
     watch: true,
   });
+
   useEffect(() => {
     const currentTime = new Date().getTime() / 1000;
     const postTime = parseInt(timeStamp);
-
     const timeDifference = currentTime - postTime;
 
     if (timeDifference < 60) {
@@ -86,50 +92,63 @@ const PostComponent = ({
       setLikeValue(isUserLikedCwett);
     }
   }, [isUserLikedCwett]);
-
   useEffect(() => {
     if (likeValue === true) {
       setIsLiked(true);
     } else if (likeValue === false) {
       setIsLiked(false);
     }
-  }, [isUserLiked, likeValue]);
+  }, [likeValue]);
   const handleLiked = async () => {
     if (walletClient?.account.address != undefined) {
-      try {
-        if (!isLiked) {
-          await like?.();
+      if (
+        successLike == false ||
+        successUnlike == false ||
+        loadingLike == false ||
+        loadingUnlike == false
+      ) {
+        try {
+          if (!isLiked) {
+            await like?.();
+          }
+          if (isLiked) {
+            await unlike?.();
+          }
+        } catch (error) {
+          console.error("Error when liking/unliking:", error);
         }
-        if (isLiked) {
-          await unlike?.();
-        }
-      } catch (error) {
-        console.error("Error when liking/unliking:", error);
+      } else {
+        notify("Please wait for the transaction to complete", "error");
       }
     }
     if (walletClient?.account.address == undefined) {
       notify("Please connect your wallet", "error");
     }
   };
-
   useEffect(() => {
-    if (likeLoading === true) {
-      notify("Liking...", "info");
+    setLoadingLike(likeLoading);
+    setLoadingUnlike(unlikeLoading);
+    setSuccessLike(likeSuccessful);
+    setSuccessUnlike(unlikeSuccesful);
+    setErrorsLike(errorLike);
+    setErrorsUnlike(errorUnlike);
+    if (loadingLike === true) {
+      setLoadingLike(false);
     }
-    if (unlikeLoading === true) {
-      notify("Unliking...", "info");
+    if (loadingUnlike === true) {
+      setLoadingUnlike(false);
     }
-    if (likeSuccessful === true) {
-      notify("Liked Successfully", "success");
+    if (successLike === true) {
+      setSuccessLike(false);
     }
-    if (unlikeSuccesful === true) {
-      notify("Unliked Successfully", "success");
+    if (successUnlike === true) {
+      setSuccessUnlike(false);
     }
-    if (errorLike === true) {
-      notify("Like Cancelled", "error");
+    if (errorsLike === true) {
+      setErrorsLike(false);
     }
-    if (errorUnlike === true) {
-      notify("Unlike Cancelled", "error");
+    if (errorsUnlike === true) {
+      setErrorsUnlike(false);
     }
   }, [
     likeLoading,
@@ -140,6 +159,33 @@ const PostComponent = ({
     errorUnlike,
   ]);
 
+  useEffect(() => {
+    if (loadingLike === true) {
+      notify("Liking...", "info");
+    }
+    if (loadingUnlike === true) {
+      notify("Unliking...", "info");
+    }
+    if (successUnlike === false && successLike === true) {
+      notify("Liked Successfully", "success");
+    }
+    if (successLike === false && successUnlike === true) {
+      notify("Unliked Successfully", "success");
+    }
+    if (errorsLike === true) {
+      notify("Like Cancelled", "error");
+    }
+    if (errorsUnlike === true) {
+      notify("Unlike Cancelled", "error");
+    }
+  }, [
+    loadingLike,
+    loadingUnlike,
+    successLike,
+    successUnlike,
+    errorsLike,
+    errorsUnlike,
+  ]);
   return (
     <div className="flex mx-4 my-6 bg-transparent rounded-lg shadow-xl shadow-purple-600/80 md:mx-auto sm:w-128 md:w-128 relative">
       <small className="absolute top-2 right-2 text-xs text-white">
